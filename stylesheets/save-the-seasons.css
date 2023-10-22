@@ -1,0 +1,36 @@
+table {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+
+.tile {
+  width: 75px;
+  height: 75px;
+  border-radius: 10px;
+  white-space: pre;
+  }
+
+.tile-fall {
+  background: orange;
+}
+
+.tile-winter {
+  background: rgb(138, 248, 250);
+}
+
+.tile-spring {
+  background: rgb(71, 137, 71);
+}
+
+.tile-summer {
+  background: blanchedalmond;
+}
+
+.tile-barren {
+  background: grey;
+}
+
+.tile-permafrost {
+  background: rgb(4, 0, 255);
+}

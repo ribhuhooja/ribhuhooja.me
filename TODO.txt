@@ -1,1 +1,4 @@
+Beautify using CSS
+Instead of hardcoding the grid, do some sort of innerHTML things
+
 Make a 'developer notes' file
