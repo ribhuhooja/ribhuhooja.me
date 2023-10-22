@@ -1,8 +1,10 @@
-Instead of run seasons, have the button cycle through each possible action
-Have a years survived counter. Also, check how many years do you survive with no player action
+X Instead of run seasons, have the button cycle through each possible action
+X When special pieces die, invalidate their actions and show that through a piece of text
+X Account for "No possible fall action"
+X Have a years survived counter. Also, check how many years do you survive with no player action
 Spread out global warming into multiple actions?
 
-Remove debugging (just cmd-f for console.log())
+X Remove debugging (just cmd-f for console.log())
 
 Beautify using CSS
 Instead of hardcoding the grid, do some sort of innerHTML thing

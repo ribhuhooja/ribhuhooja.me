@@ -6,6 +6,7 @@
     <title>Save the Seasons!</title>
 </head>
 <body>
+    <div id="years-survived">Years Survived</div>
     <table>
         <tr>
             <td><button id="00" class = "tile" onclick="handleClick(id)"></button></td>
@@ -88,7 +89,10 @@
             <td><button id="77" class = "tile" onclick="handleClick(id)"></button></td>
         </tr>
     </table>
+    <div id="action-specific-text" class="invisible" style.text-align="center"></div>
     <div id="next-season"><button id = "next-season-button">Next Season</button></div>
+    <div id="player-action-text"></div>
+    <div id="game-over" class="invisible">GAME OVER!</div>
     <script src="save-the-seasons.js"></script>
 </body>
 </html>

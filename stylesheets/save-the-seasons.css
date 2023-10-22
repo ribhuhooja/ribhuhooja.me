@@ -4,9 +4,28 @@ table {
   }
 
 #next-season {
+  margin: auto;
   text-align: center;
 }
 
+#player-action-text {
+  margin: auto;
+  text-align: center;
+}
+
+#action-specific-text {
+  margin: auto;
+  text-align: center;
+}
+
+#game-over {
+  margin: auto;
+  text-align: center;
+}
+#years-survived{
+  margin: auto;
+  text-align: center;
+}
 
 .tile {
   width: 75px;
@@ -37,4 +56,12 @@ table {
 
 .tile-permafrost {
   background: rgb(4, 0, 255);
+}
+
+.visible {
+  display: block;
+}
+
+.invisible {
+  display: none;
 }

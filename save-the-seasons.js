@@ -12,7 +12,7 @@ const Actions = {   // An enum for actions, also storing button text for that ac
     SPREAD_WILDFIRES_FALL: "Wildfire spreads",
     SPREAD_WILDFIRES_SUMMER: "Wildfire spreads!",
     EXTINGUISH_WILDFIRES: "Let it snow",
-    PERMAFROST_SPREADS: "Let it freeze!",
+    PERMAFROST_SPREADS: "Permafrost spreads",
     STORM_SPREAD_AND_TICK: "Storms move",
     ACORNS_GROW: "Acorns grow",
     GLOBAL_WARMING: "Global warming!",
@@ -21,22 +21,30 @@ const Actions = {   // An enum for actions, also storing button text for that ac
     TO_WINTER: "Onwards to winter",
     TO_SPRING: "Onwards to spring",
     TO_SUMMER: "Onwards to summer",
+    INVOKE_PERMAFROST: "Choose a tile to freeze",
+    INVOKE_STORM: "Choose a tile, with at least one tree on it, o produce a storm on",
+    FALL_ACTION: "Choose a tile, adjacent to a tile with four trees, to plant an acorn on OR extinguish wildfire on"
 
 }
 
-const actions_in_order = [Actions.PLANT_ACORNS,
+const actions_in_order = [Actions.FALL_ACTION,
+    Actions.PLANT_ACORNS,
     Actions.SPREAD_WILDFIRES_FALL,
     Actions.TO_WINTER,
     Actions.EXTINGUISH_WILDFIRES,
+    Actions.INVOKE_PERMAFROST,
     Actions.PERMAFROST_SPREADS,
     Actions.TO_SPRING,
     Actions.STORM_SPREAD_AND_TICK,
+    Actions.INVOKE_STORM,
     Actions.ACORNS_GROW,
     Actions.TO_SUMMER,
     Actions.GLOBAL_WARMING,
     Actions.TILE_BARREN,
     Actions.SPREAD_WILDFIRES_SUMMER,
     Actions.TO_FALL];
+
+const player_actions = [Actions.INVOKE_PERMAFROST,  Actions.INVOKE_STORM, Actions.FALL_ACTION]
 
 const TreeType = {
     NOTHING:'nothing',      // no tree
@@ -79,14 +87,15 @@ class GameState {
         this.board = Array.from({length : numrows}, () => Array.from({length : numcols},() => new Tile()));
         
         // The current season
-        this.season = Seasons.FALL;
+        this.season = Seasons.SUMMER;
         
         // The special pieces for each season
         this.homecoming = true;
         this.carnival = true;
         this.green_key = true;
 
-        this.next_action = Actions.PLANT_ACORNS;
+        this.next_action = Actions.GLOBAL_WARMING;
+        this.years_survived = -1;
 
         this.initialPopulate()
         
@@ -132,6 +141,9 @@ class GameState {
     stepSeason(){
         let seasonsArray = [Seasons.FALL, Seasons.WINTER, Seasons.SPRING, Seasons.SUMMER];
         this.season = seasonsArray[(seasonsArray.indexOf(this.season) + 1) % 4]
+        if (this.season === Seasons.FALL){
+            this.years_survived++;
+        }
     }
 
     plantAcorns(){
@@ -226,7 +238,7 @@ class GameState {
     growAcorns(){
         for (const row of this.board){
             for (const tile of row){
-                if (tile.storm > 0){
+                if (tile.storm > 0 && !tile.has_permafrost){
                     tile.growTileAcorns();
                 }
             }
@@ -291,6 +303,16 @@ class GameState {
         }
         for (const tile of to_make_barren){
             tile.is_barren = true;
+            if (tile.specialObject != null){
+                if (tile.specialObject === SpecialObjects.FALL){
+                    this.homecoming = false;
+                } else if (tile.specialObject === SpecialObjects.WINTER){
+                    this.carnival = false;
+                } else {
+                    this.green_key = false;
+                }
+                tile.specialObject = null;
+            }
         }
     }
 
@@ -321,15 +343,20 @@ class Tile {
         }
     }
 
+    // Trees are always filled from the left to the right in the array, and removed in the same order
+    // So the first time we enconter an element that is not a tree, we know all trees are to the
+    // left of that element in the array
     numTrees(){
         for (let t=0;t<4;t++){
-            if (this.trees[t] === TreeType.NOTHING){
+            if (this.trees[t] != TreeType.TREE){
                 return t;
             }
         }
         return 4;
     }
 
+    // What to display on each tile
+    // Complete hack - I'm using emojis to display tile state
     UIString(){
         let treeUI = Array(4);
         for (let i=0;i<4;i++){
@@ -362,6 +389,8 @@ class Tile {
     }
 
     plantAcorn(){
+        if (this.isBurning){return;}
+
         for (let t=0;t<4;t++){
             if (this.trees[t] === TreeType.NOTHING){
                 this.trees[t] = TreeType.ACORN;
@@ -441,7 +470,7 @@ function getNeighborIndices(i,j){
         for (let y=Math.max(j-1,0);y<Math.min(j+2, numcols);y++){
             // A tile is not its own neighbor
             if (!(x===i&&y===j)){         
-                neighbors.push([x,y])
+                neighbors.push([x,y]);
             }
 
         }
@@ -476,14 +505,108 @@ function initialTreeDistribution(){
 var gameState = new GameState();
 
 function handleClick(id){
-   let [i,j] = id.split("");
-   gameState.board[i][j].storm = 1;
-   updateTileDisplay();
+    let [i,j] = id.split("");
+    i = parseInt(i);
+    j = parseInt(j);
+    let action_taken = false;
+
+    // No action on barren tiles
+    if (gameState.board[i][j].is_barren){return;}
+
+    if (player_actions.includes(gameState.next_action)){
+        if (gameState.next_action === Actions.INVOKE_PERMAFROST){
+            gameState.board[i][j].has_permafrost = true;
+            action_taken = true;
+        } else if (gameState.next_action === Actions.INVOKE_STORM && gameState.board[i][j].numTrees() > 0 && gameState.board[i][j].storm === 0){
+            gameState.board[i][j].storm = 1;
+            action_taken = true;
+        } else if (gameState.next_action === Actions.FALL_ACTION){
+            const neighbors = getNeighborIndices(i,j).map((nb)=>gameState.board[nb[0]][nb[1]]);
+            for (const neighbor of neighbors){
+                if (neighbor.numTrees() === 4){
+
+                    // If on fire, extinguish the fire
+                    if (gameState.board[i][j].isBurning){
+                        gameState.board[i][j].extinguishFire();
+                        action_taken = true;
+                    }
+                    // If there is space to plant an acorn, plant an acorn
+                    else if (gameState.board[i][j].trees[3] === TreeType.NOTHING){
+                        console.log("here");
+                        gameState.board[i][j].plantAcorn();
+                        action_taken = true;
+                    }
+                }
+            }
+        }
+
+        if (action_taken){
+            gameState.next_action = actions_in_order[(actions_in_order.indexOf(gameState.next_action) + 1)%actions_in_order.length];
+        }
+    }
+    updateTileDisplay();
 }
 
 function doNextAction(){
     gameState.doNextAction();
     gameState.next_action = actions_in_order[(actions_in_order.indexOf(gameState.next_action) + 1)%actions_in_order.length];
+    if (document.getElementById("action-specific-text").className === "visible"){
+        document.getElementById("action-specific-text").className = "invisible";
+    }
+    
+    // If the next action is a player action, but it can't be taken due to some reason, skip it and write the reason
+    if (player_actions.includes(gameState.next_action)){
+        if (gameState.next_action === Actions.INVOKE_PERMAFROST){
+            if (!gameState.carnival){
+                document.getElementById("action-specific-text").className = "visible";
+                document.getElementById("action-specific-text").innerHTML = "Since the snow sculpture has been destroyed, you can't take an action";
+                gameState.next_action = actions_in_order[(actions_in_order.indexOf(gameState.next_action) + 1)%actions_in_order.length];
+            }
+        } else if (gameState.next_action === Actions.INVOKE_STORM){
+            if (!gameState.green_key){
+                document.getElementById("action-specific-text").className = "visible";
+                document.getElementById("action-specific-text").innerHTML = "Since the green key concert has been destroyed, you can't take an action";
+                gameState.next_action = actions_in_order[(actions_in_order.indexOf(gameState.next_action) + 1)%actions_in_order.length];
+            } else {
+                // If no tile has a tree, we can't cause a storm
+                let tiles_with_trees = gameState.board.flat().filter((tile)=>tile.numTrees()>0);
+                if (tiles_with_trees.length === 0){
+                    document.getElementById("action-specific-text").className = "visible";
+                    document.getElementById("action-specific-text").innerHTML = "There are no possible tiles to spread storm on";
+                    gameState.next_action = actions_in_order[(actions_in_order.indexOf(gameState.next_action) + 1)%actions_in_order.length];
+                }
+            }
+
+        }
+        else if (gameState.next_action === Actions.FALL_ACTION){
+            if (!gameState.homecoming){
+                document.getElementById("action-specific-text").className = "visible";
+                document.getElementById("action-specific-text").innerHTML = "Since the homecoming bonfire has been destroyed, you can't take an action";
+                gameState.next_action = actions_in_order[(actions_in_order.indexOf(gameState.next_action) + 1)%actions_in_order.length];
+            } else {
+                console.log("here");
+                // We also need to check if there is a valid tile
+                let four_tree_tile_indices = Array();
+                for (let i=0;i<numrows;i++){
+                    for (let j=0;j<numcols;j++){
+                        if (gameState.board[i][j].numTrees() === 4){
+                            four_tree_tile_indices.push([i,j]);
+                        }
+                    }
+                }
+                let neighbor_indices = four_tree_tile_indices.map((tile)=>getNeighborIndices(tile[0], tile[1])).flat();
+                let neighbors = neighbor_indices.map((nbi) => gameState.board[nbi[0]][nbi[1]]);
+                let valid_neighbors = neighbors.filter((nb) => nb.isBurning ||nb.trees[3] === TreeType.NOTHING);
+                valid_neighbors = valid_neighbors.filter((nb)=>!(nb.is_barren || nb.has_permafrost));
+                if (valid_neighbors.length === 0){
+                    document.getElementById("action-specific-text").className = "visible";
+                    document.getElementById("action-specific-text").innerHTML = "There are no possible tiles to take an action on";
+                    gameState.next_action = actions_in_order[(actions_in_order.indexOf(gameState.next_action) + 1)%actions_in_order.length];
+                }
+            }
+        }   
+    
+    }
     updateTileDisplay();
 }
 
@@ -501,8 +624,29 @@ function updateTileDisplay(){
         }
     }
 
-    document.getElementById("next-season-button").innerHTML = gameState.next_action;
-    document.getElementById("next-season-button").onclick = doNextAction;
+    document.getElementById("years-survived").innerHTML = "Years Survived: " + Math.max(0, gameState.years_survived);
+
+    if (player_actions.includes(gameState.next_action)){
+        document.getElementById("next-season").className = "invisible";
+        document.getElementById("player-action-text").className = "visible";
+        
+        document.getElementById("player-action-text").innerHTML = gameState.next_action;
+    } else {
+        document.getElementById("next-season").className = "visible";
+        document.getElementById("player-action-text").className = "invisible";
+        
+        document.getElementById("next-season-button").innerHTML = gameState.next_action;
+        document.getElementById("next-season-button").onclick = doNextAction;
+    }
+
+    // If all tiles are barren, game over
+    let barren_tiles = gameState.board.flat().filter((tile)=>tile.is_barren);
+    if (barren_tiles.length === numrows*numcols){
+        document.getElementById("next-season").className = "invisible";
+        document.getElementById("player-action-text").className = "invisible";
+        document.getElementById("action-specific-text").className = "invisible";
+        document.getElementById("game-over").className = "visible";
+    }
 }
 
 updateTileDisplay()
