@@ -1,4 +1,11 @@
+Instead of run seasons, have the button cycle through each possible action
+Have a years survived counter. Also, check how many years do you survive with no player action
+Spread out global warming into multiple actions?
+
+Remove debugging (just cmd-f for console.log())
+
 Beautify using CSS
-Instead of hardcoding the grid, do some sort of innerHTML things
+Instead of hardcoding the grid, do some sort of innerHTML thing
+Comment and clean up code
 
 Make a 'developer notes' file

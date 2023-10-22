@@ -3,6 +3,10 @@ table {
     margin-right: auto;
   }
 
+#next-season {
+  text-align: center;
+}
+
 
 .tile {
   width: 75px;
