@@ -22,7 +22,7 @@ const Actions = {   // An enum for actions, also storing button text for that ac
     TO_SPRING: "Onwards to spring",
     TO_SUMMER: "Onwards to summer",
     INVOKE_PERMAFROST: "Choose a tile to freeze",
-    INVOKE_STORM: "Choose a tile, with at least one tree on it, o produce a storm on",
+    INVOKE_STORM: "Choose a tile, with at least one tree on it, to produce a storm on",
     FALL_ACTION: "Choose a tile, adjacent to a tile with four trees, to plant an acorn on OR extinguish wildfire on"
 
 }

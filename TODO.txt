@@ -7,7 +7,11 @@ Spread out global warming into multiple actions?
 X Remove debugging (just cmd-f for console.log())
 
 Beautify using CSS
+Divide up the sections and position and format them
+Do some kind of a background thing
+Add an image to the links
+
+
+
 Instead of hardcoding the grid, do some sort of innerHTML thing
 Comment and clean up code
-
-Make a 'developer notes' file
