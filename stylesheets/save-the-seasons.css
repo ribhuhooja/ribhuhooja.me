@@ -118,9 +118,10 @@ table {
   display: none;
 }
 
-button {
+#next-season-button {
   width: 100x;
   height: 50px;
   border-radius: 10px;
-  background-color: grey;
+  background-color: #bb9af7;
+  color: #1d202f;
 }

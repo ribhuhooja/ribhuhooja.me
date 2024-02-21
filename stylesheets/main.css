@@ -25,8 +25,3 @@ a {
 h1 {
   text-align: center;
 }
-
-#conway-holder {
-  display: flex;
-  justify-content: center;
-}
