@@ -138,6 +138,7 @@ class GameState {
 
     }
 
+    // Moves to the next season
     stepSeason(){
         let seasonsArray = [Seasons.FALL, Seasons.WINTER, Seasons.SPRING, Seasons.SUMMER];
         this.season = seasonsArray[(seasonsArray.indexOf(this.season) + 1) % 4]
@@ -158,6 +159,7 @@ class GameState {
     }
 
     spreadWildfire(){
+        // Doesn't immediately set on fire because then those tiles would also spread fire
         let to_set_on_fire = new Array();
         for (let i = 0; i<numrows;i++){
             for (let j=0; j<numcols;j++){
@@ -187,6 +189,7 @@ class GameState {
     }
 
     spreadPermafrost(){
+        // Same as spread wildfire, delay spreading to new tiles
         const to_freeze = new Array();
         for (let i = 0; i<numrows;i++){
             for (let j=0; j<numcols;j++){
@@ -206,6 +209,7 @@ class GameState {
     }
 
     spreadStorms(){
+        // Same as spread wildfire, delay spreading to new tiles
         const to_storm = new Array();
         for (let i = 0; i<numrows;i++){
             for (let j=0; j<numcols;j++){
@@ -220,6 +224,7 @@ class GameState {
             }   
         }
         for (const tile of to_storm){
+            // This will tick down right afterwards, so each storm lasts for one turn on a tile
             tile.storm = 2;    
         }
     }
@@ -301,6 +306,7 @@ class GameState {
                 
             }   
         }
+        // If one of the newly barren tiles had a special object, destroy it
         for (const tile of to_make_barren){
             tile.is_barren = true;
             if (tile.specialObject != null){
@@ -318,7 +324,7 @@ class GameState {
 
     doNextAction(){
         // This is really hacky but I can't think of a better way to do this right now
-        // I'm having trouble simply passing a reference to the methods
+        // I'm having trouble passing a reference to the methods
         eval(this.action_map.get(this.next_action));
     }
 }
@@ -433,6 +439,7 @@ class Tile {
         this.isBurning = true;
     }
 
+    // Take a tree already on fire and burn it down to nothing
     burnDown(){
         for (let t=0;t<4;t++){
             if (this.trees[t] === TreeType.BURNING){
@@ -502,6 +509,10 @@ function initialTreeDistribution(){
     return res;
 }
 
+// The following code is a bit hacky
+// I declare a global gameState object and have some global functions mutate its state
+// I'm not sure how else to do this, since the functions need to be global to be passed to OnClick()s and such
+
 var gameState = new GameState();
 
 function handleClick(id){
@@ -513,6 +524,7 @@ function handleClick(id){
     // No action on barren tiles
     if (gameState.board[i][j].is_barren){return;}
 
+    // Deals with player actions, if it is possible to do a player action and the player clicked on a valid tile
     if (player_actions.includes(gameState.next_action)){
         if (gameState.next_action === Actions.INVOKE_PERMAFROST){
             gameState.board[i][j].has_permafrost = true;

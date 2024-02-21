@@ -117,3 +117,9 @@ table {
 .invisible {
   display: none;
 }
+
+button {
+  width: 100x;
+  height: 50px;
+  border-radius: 10px;
+}

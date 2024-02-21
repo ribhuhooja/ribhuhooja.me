@@ -1,32 +1,45 @@
+<!-- Example HTML file used in Module 1: Frontend Basics -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
     <head>
-        <meta charset="utf-8">
-        <title>Hello World!</title>
-        <link rel="stylesheet" href="stylesheets/main.css">
-        <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+        <title>Ribhu Hooja</title>
+        <link rel="stylesheet" href="styles/main.css"/>
+        <link href='https://fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet'>
+        <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet'>
     </head>
     <body>
-        <h1>Welcome!</h1>
-        <section>
-            <p>
-                Hello and welcome to my website! I'm Ribhu, and I love making games! I'm from Jaipur, India, and I'm currently a 
-                freshman at Dartmouth College, USA.
-            </p>
-        </section>
-        <section>
-            <p>
-                Check out my game, Save the Seasons!
-            </p>
-        <button onclick="location.href = 'instructions.html'">PLAY</button>
-        </section>
-        <section>
-            Or check my other projects:
-            <br>
-            <a href="https://github.com/ajoohuhbir/breakout-basic">Breakout</a>
-            <br>
-            <a href="https://github.com/ribhuhooja/conway-game-of-life">Conway's game of life</a>
-        </section>
+        <h1 class="header" id="title-header">Welcome to my website!</h1>
+        <h2 class="header">About Me</h2>
+        <p>Hello and welcome to my website! I'm Ribhu, and I love making games! I'm from Jaipur, India, and I'm currently a freshman at Dartmouth College, USA.</p>
+        <h2 class="header">My Projects</h2>
+        <ul>
+            <li>
+                <span class="proj-name">Sapsling: </span>
+                <a href="https://rustymechanical.itch.io/sapsling">sapsling</a>
+            </li>
+            <li>
+                <span class="proj-name">Save the Seasons: </span>
+                <a href="https://ribhuhooja.me/instructions.html">save-the-seasons</a>
+            </li>
+        </ul>
+        <h2>Where I'm from</h2>
+        <p>I'm from Jaipur, India, which is a really cool place (it's actually pretty hot for most of the year)</p>
+        <h2>Find me on...</h2>
+        <a href="https://github.com/ribhuhooja">my github!</a>
         <br>
+        <a href="https://github.com/ajoohuhbir">my github...also</a>
+        <br>
+        <a href="https://www.linkedin.com/in/ribhu-hooja-820b452a5/">LinkedIn</a>
+        <br>
+        <h2>Here's a picture of my dog to cheer you up!</h2>
+        <div class="dog-image-holder">
+            <img class="dog-image" src="goofy.jpg" alt="picture of a dog">
+        </div>
+        <h2>Fare thee well in the rest of your travels through the internet!</h2>
+        <div id="conway-holder">
+            <canvas id="conway" height="200" width="200"></canvas>
+        </div>
+        <script src="script.js"></script>
+        <script src="conway.js"></script>
     </body>
 </html>
