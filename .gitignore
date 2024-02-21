@@ -1,2 +1,8 @@
 practice/
 TODO.txt
+
+# macOs stuff
+.DS_Store
+
+# vim backup files
+*.sw?
