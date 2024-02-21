@@ -6,6 +6,13 @@ This is (an updated version of) my first website, ever!
 ## Guitar utils
 An addition to the website, consistent with the "music" theme of the challenge.
 
+Right now, the "trainer" util is active. It tells you to play a given note,
+then if you played the correct note it adds to your score
+
+(The functionality is really janky right now; it detects too much "noise". This can be improved by
+adding a loudness filter, and waiting between asking for notes. But as a proof of concept it works)
+
+The code to find notes is taken from [this](https://jonathan.bergknoff.com/journal/making-a-guitar-tuner-html5/)
 
 ## Save the Seasons
 
