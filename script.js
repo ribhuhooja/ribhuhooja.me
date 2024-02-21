@@ -27,6 +27,3 @@ function slowlyFillElement(element, delayBeforeStart, delay){
 }
 
 slowlyFillElement(document.getElementById("title-header"), 0, 1500);
-document.getElementsByTagName("p").array.forEach(element => {
-    slowlyFillElement(element, index*100, 1500);
-});
